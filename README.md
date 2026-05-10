@@ -1,3 +1,4 @@
+![Uploading screenshot.png…]()
 # Tugas12_20240140282
 
 ## Praktikum 12 - Form Input Interaktif
@@ -16,4 +17,4 @@ Website form interaktif dengan fitur:
 https://aditiyabayusatria-282.github.io/Tugas12_20240140282/
 
 ## Screenshot
-![Screenshot](screenshot.png.png)
+![Screenshot](screenshot.png)
