@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Praktikum 12 – Form & Intent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --surface: #151828;
+      --card: #1c2035;
+      --border: #2a2f4a;
+      --accent: #6c63ff;
+      --accent2: #ff6584;
+      --accent3: #43e8b0;
+      --text: #e8eaf6;
+      --muted: #7b82a8;
+      --radius: 14px;
+      --glow: 0 0 28px rgba(108,99,255,0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 80px;
+      overflow-x: hidden;
+    }
+
+    /* --- Background decoration --- */
+    body::before {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%);
+      top: -150px; left: -200px;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,101,132,0.09) 0%, transparent 70%);
+      bottom: -100px; right: -150px;
+      pointer-events: none;
+    }
+
+    /* --- Header --- */
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+      animation: fadeDown 0.7s ease both;
+    }
+    header .badge {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent3);
+      border: 1px solid var(--accent3);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 18px;
+    }
+    header h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 700;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    /* --- Card wrapper --- */
+    .wrapper {
+      width: 100%;
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* --- Form card --- */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      animation: fadeUp 0.6s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    }
+
+    .card h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card h2 .icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      background: rgba(108,99,255,0.18);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+    }
+
+    /* --- Form grid --- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.6) sepia(1) saturate(3) hue-rotate(220deg);
+      cursor: pointer;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237b82a8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.18);
+    }
+
+    /* --- Submit button --- */
+    .btn-submit {
+      margin-top: 8px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), #9b8ffd);
+      color: #fff;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.25s;
+      box-shadow: var(--glow);
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 38px rgba(108,99,255,0.5);
+    }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* --- Output card --- */
+    .output-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      display: none;
+      animation: fadeUp 0.5s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .output-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent3), var(--accent2));
+    }
+    .output-card.show { display: block; }
+
+    .output-card h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .output-card h2 .icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      background: rgba(67,232,176,0.15);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+    }
+
+    /* --- Result rows --- */
+    .result-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .result-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+    }
+    .result-row:hover { border-color: var(--accent); }
+    .result-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-top: 2px;
+    }
+    .result-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .result-value.highlight {
+      color: var(--accent3);
+      font-family: 'Space Mono', monospace;
+    }
+    .result-value.accent { color: var(--accent2); }
+
+    /* --- Badge chips for select --- */
+    .chip {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(108,99,255,0.2);
+      color: var(--accent);
+      border: 1px solid rgba(108,99,255,0.35);
+    }
+
+    /* --- Animations --- */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Footer --- */
+    footer {
+      margin-top: 48px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 560px) {
+      .card, .output-card { padding: 24px 20px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .result-row { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Praktikum 12</div>
+    <h1>Form Input<br/>Interaktif</h1>
+    <p>Pemrograman Berbasis Mobile — Android Studio</p>
+  </header>
+
+  <div class="wrapper">
+
+    <!-- FORM CARD -->
+    <div class="card" style="animation-delay:0.1s">
+      <h2><span class="icon">📋</span> Data Pendaftaran</h2>
+
+      <div class="form-grid">
+
+        <!-- Nama -->
+        <div class="form-group full">
+          <label for="nama">Nama Lengkap</label>
+          <input type="text" id="nama" placeholder="Masukkan nama lengkap Anda" />
+        </div>
+
+        <!-- NIM -->
+        <div class="form-group">
+          <label for="nim">NIM</label>
+          <input type="text" id="nim" placeholder="Contoh: 20200140002" />
+        </div>
+
+        <!-- Jurusan (Select Dropdown) -->
+        <div class="form-group">
+          <label for="jurusan">Jurusan</label>
+          <select id="jurusan">
+            <option value="">— Pilih Jurusan —</option>
+            <option value="Teknik Informatika">Teknik Informatika</option>
+            <option value="Sistem Informasi">Sistem Informasi</option>
+            <option value="Teknik Elektro">Teknik Elektro</option>
+            <option value="Teknik Mesin">Teknik Mesin</option>
+            <option value="Teknik Sipil">Teknik Sipil</option>
+            <option value="Manajemen">Manajemen</option>
+          </select>
+        </div>
+
+        <!-- Semester (Select) -->
+        <div class="form-group">
+          <label for="semester">Semester</label>
+          <select id="semester">
+            <option value="">— Pilih Semester —</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+          </select>
+        </div>
+
+        <!-- Tanggal Lahir (Date) -->
+        <div class="form-group">
+          <label for="tgl-lahir">Tanggal Lahir</label>
+          <input type="date" id="tgl-lahir" />
+        </div>
+
+        <!-- Tanggal Daftar (Date) -->
+        <div class="form-group">
+          <label for="tgl-daftar">Tanggal Pendaftaran</label>
+          <input type="date" id="tgl-daftar" />
+        </div>
+
+        <!-- Alamat -->
+        <div class="form-group full">
+          <label for="alamat">Alamat</label>
+          <textarea id="alamat" placeholder="Masukkan alamat lengkap Anda..."></textarea>
+        </div>
+
+      </div>
+
+      <button class="btn-submit" onclick="tampilkanData()">✨ Tampilkan Data</button>
+    </div>
+
+    <!-- OUTPUT CARD -->
+    <div class="output-card" id="output-card">
+      <h2><span class="icon">🎯</span> Hasil Input</h2>
+      <div class="result-grid" id="result-grid"></div>
+    </div>
+
+  </div>
+
+  <footer>Made with ♥ for Praktikum 12 &nbsp;|&nbsp; Pemrograman Mobile</footer>
+
+  <script>
+    // Set default date for pendaftaran to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('tgl-daftar').value = today;
+
+    function formatTanggal(dateStr) {
+      if (!dateStr) return '—';
+      const [y, m, d] = dateStr.split('-');
+      const bulan = ['Januari','Februari','Maret','April','Mei','Juni',
+                     'Juli','Agustus','September','Oktober','November','Desember'];
+      return `${parseInt(d)} ${bulan[parseInt(m)-1]} ${y}`;
+    }
+
+    function hitungUmur(dateStr) {
+      if (!dateStr) return '';
+      const lahir = new Date(dateStr);
+      const now = new Date();
+      let umur = now.getFullYear() - lahir.getFullYear();
+      const bln = now.getMonth() - lahir.getMonth();
+      if (bln < 0 || (bln === 0 && now.getDate() < lahir.getDate())) umur--;
+      return ` (${umur} tahun)`;
+    }
+
+    function tampilkanData() {
+      const nama     = document.getElementById('nama').value.trim();
+      const nim      = document.getElementById('nim').value.trim();
+      const jurusan  = document.getElementById('jurusan').value;
+      const semester = document.getElementById('semester').value;
+      const tglLahir = document.getElementById('tgl-lahir').value;
+      const tglDaftar= document.getElementById('tgl-daftar').value;
+      const alamat   = document.getElementById('alamat').value.trim();
+
+      if (!nama || !nim || !jurusan || !semester || !tglLahir || !tglDaftar) {
+        alert('⚠️ Harap lengkapi semua field yang wajib diisi!');
+        return;
+      }
+
+      const rows = [
+        { label: 'Nama Lengkap',       value: nama,                           cls: '' },
+        { label: 'NIM',                value: nim,                             cls: 'highlight' },
+        { label: 'Jurusan',            value: jurusan,                         cls: '', chip: true },
+        { label: 'Semester',           value: `Semester ${semester}`,          cls: '', chip: true },
+        { label: 'Tanggal Lahir',      value: formatTanggal(tglLahir) + hitungUmur(tglLahir), cls: 'accent' },
+        { label: 'Tanggal Daftar',     value: formatTanggal(tglDaftar),        cls: 'accent' },
+        { label: 'Alamat',             value: alamat || '—',                   cls: '' },
+      ];
+
+      const grid = document.getElementById('result-grid');
+      grid.innerHTML = rows.map(r => `
+        <div class="result-row">
+          <span class="result-label">${r.label}</span>
+          <span class="result-value ${r.cls}">
+            ${r.chip ? `<span class="chip">${r.value}</span>` : r.value}
+          </span>
+        </div>
+      `).join('');
+
+      const card = document.getElementById('output-card');
+      card.classList.add('show');
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+
+</body>
+</html>
